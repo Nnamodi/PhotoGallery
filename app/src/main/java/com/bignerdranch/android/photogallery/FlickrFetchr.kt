@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bignerdranch.android.photogallery.api.FlickrApi
-import com.bignerdranch.android.photogallery.api.FlickrResponse
 import com.bignerdranch.android.photogallery.api.PhotoResponse
+import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,20 +18,23 @@ class FlickrFetchr {
     private val flickrApi: FlickrApi
 
     init {
+        val gson = GsonBuilder()
+            .registerTypeAdapter(PhotoResponse::class.java, PhotoDeserializer())
+            .create()
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.flickr.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        val flickrHomePageRequest: Call<FlickrResponse> = flickrApi.fetchPhotos()
-        flickrHomePageRequest.enqueue(object : Callback<FlickrResponse> {
-            override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
+        val flickrHomePageRequest: Call<PhotoDeserializer> = flickrApi.fetchPhotos()
+        flickrHomePageRequest.enqueue(object : Callback<PhotoDeserializer> {
+            override fun onResponse(call: Call<PhotoDeserializer>, response: Response<PhotoDeserializer>) {
                 Log.d(TAG, "Response received")
-                val flickrResponse: FlickrResponse? = response.body()
+                val flickrResponse: PhotoDeserializer? = response.body()
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
                 var galleryItems: List<GalleryItem> = photoResponse?.galleryItems ?: mutableListOf()
                 galleryItems = galleryItems.filterNot {
@@ -40,7 +43,7 @@ class FlickrFetchr {
                 responseLiveData.value = galleryItems
             }
 
-            override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
+            override fun onFailure(call: Call<PhotoDeserializer>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
             }
         })
