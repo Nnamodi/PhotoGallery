@@ -1,10 +1,9 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.api
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.bignerdranch.android.photogallery.api.FlickrApi
-import com.bignerdranch.android.photogallery.api.PhotoResponse
+import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback

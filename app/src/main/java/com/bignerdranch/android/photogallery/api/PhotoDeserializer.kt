@@ -1,6 +1,6 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.api
 
-import com.bignerdranch.android.photogallery.api.PhotoResponse
+import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.google.gson.*
 import java.lang.reflect.Type
 

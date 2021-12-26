@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.model
 
 import com.google.gson.annotations.SerializedName
 

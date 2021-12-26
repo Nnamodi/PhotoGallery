@@ -1,7 +1,8 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.bignerdranch.android.photogallery.R
 
 class PhotoGalleryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
