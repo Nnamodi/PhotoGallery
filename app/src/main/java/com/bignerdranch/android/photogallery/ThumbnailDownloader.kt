@@ -19,7 +19,7 @@ private const val MESSAGE_DOWNLOAD = 0
 class ThumbnailDownloader<in T>(
     private val responseHandler: Handler,
     private val onThumbnailDownloaded: (T, Bitmap) -> Unit
-) : HandlerThread(TAG) {
+) : HandlerThread(TAG), LifecycleObserver {
     val fragmentLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
         fun setup() {
@@ -34,14 +34,14 @@ class ThumbnailDownloader<in T>(
             quit()
         }
     }
-    val viewLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun clearQueue() {
-            Log.i(TAG, "Clearing all requests from queue")
-            requestHandler.removeMessages(MESSAGE_DOWNLOAD)
-            requestMap.clear()
-        }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun clearQueue() {
+        Log.i(TAG, "Clearing all requests from queue")
+        requestHandler.removeMessages(MESSAGE_DOWNLOAD)
+        requestMap.clear()
     }
+
     private var hasQuit = false
     private lateinit var requestHandler: Handler
     private val requestMap = ConcurrentHashMap<T, String>()
