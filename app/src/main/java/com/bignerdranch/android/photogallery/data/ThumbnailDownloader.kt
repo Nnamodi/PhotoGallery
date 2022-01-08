@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.data
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -35,6 +35,7 @@ class ThumbnailDownloader<in T>(
         }
     }
 
+    /** Based on a challenge. */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun clearQueue() {
         Log.i(TAG, "Clearing all requests from queue")
@@ -42,10 +43,11 @@ class ThumbnailDownloader<in T>(
         requestMap.clear()
     }
 
-    private var hasQuit = false
     private lateinit var requestHandler: Handler
+    private var hasQuit = false
     private val requestMap = ConcurrentHashMap<T, String>()
     private val flickrFetchr = FlickrFetchr()
+    private val cache = Cache()
 
     @Suppress("UNCHECKED_CAST")
     @SuppressLint("HandlerLeak")
@@ -74,13 +76,15 @@ class ThumbnailDownloader<in T>(
 
     private fun handleRequest(target: T) {
         val url = requestMap[target] ?: return
-        val bitMap = flickrFetchr.fetchPhoto(url) ?: return
+        val bitmap = cache.getBitmapFromCache(url) ?: flickrFetchr.fetchPhoto(url) ?: return
         responseHandler.post(Runnable {
             if (requestMap[target] != url || hasQuit) {
                 return@Runnable
             }
             requestMap.remove(target)
-            onThumbnailDownloaded(target, bitMap)
+            onThumbnailDownloaded(target, bitmap)
+            Log.i("Cache", "Image($bitmap) downloaded from $url")
         })
+        cache.addBitmapToMemoryCache(url, bitmap)
     }
 }

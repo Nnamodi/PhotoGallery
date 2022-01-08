@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bignerdranch.android.photogallery.R
-import com.bignerdranch.android.photogallery.ThumbnailDownloader
+import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
 import com.bignerdranch.android.photogallery.model.GalleryItem
 
 private const val TAG = "PhotoGalleryFragment"
