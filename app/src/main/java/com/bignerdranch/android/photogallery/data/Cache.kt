@@ -10,6 +10,7 @@ class Cache {
     private var memoryCache : LruCache<String, Bitmap>
      = object : LruCache<String, Bitmap>(cacheSize) {
         override fun sizeOf(key: String, value: Bitmap): Int {
+            Log.i("Cache", "${value.byteCount}")
             return value.byteCount / 1024
         }
     }
