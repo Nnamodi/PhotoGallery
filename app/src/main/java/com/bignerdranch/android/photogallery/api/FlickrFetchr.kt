@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,20 +22,31 @@ class FlickrFetchr {
     private val flickrApi: FlickrApi
 
     init {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(PhotoInterceptor())
+            .build()
         val gson = GsonBuilder()
             .registerTypeAdapter(PhotoResponse::class.java, PhotoDeserializer())
             .create()
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.flickr.com/")
             .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(client)
             .build()
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetaData(flickrApi.fetchPhotos())
+    }
+
+    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetaData(flickrApi.searchPhotos(query))
+    }
+
+    private fun fetchPhotoMetaData(flickrRequest: Call<PhotoDeserializer>): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        val flickrHomePageRequest: Call<PhotoDeserializer> = flickrApi.fetchPhotos()
-        flickrHomePageRequest.enqueue(object : Callback<PhotoDeserializer> {
+        flickrRequest.enqueue(object : Callback<PhotoDeserializer> {
             override fun onResponse(call: Call<PhotoDeserializer>, response: Response<PhotoDeserializer>) {
                 Log.d(TAG, "Response received")
                 val flickrResponse: PhotoDeserializer? = response.body()
