@@ -10,6 +10,7 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ class PhotoGalleryFragment : Fragment() {
     private lateinit var photoRecyclerView: RecyclerView
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
+    private lateinit var progressBar: ProgressBar
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,8 @@ class PhotoGalleryFragment : Fragment() {
         )
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
+        progressBar = view.findViewById(R.id.progress_bar) as ProgressBar
+        progressBar.visibility = View.VISIBLE
         return view
     }
 
@@ -70,6 +74,8 @@ class PhotoGalleryFragment : Fragment() {
             { galleryItems ->
                 Log.d(TAG, "Gallery items received from ViewModel: $galleryItems")
                 photoRecyclerView.adapter = PhotoAdapter(galleryItems)
+                progressBar.visibility = View.GONE
+                photoRecyclerView.visibility = View.VISIBLE
             }
         )
     }
@@ -94,6 +100,8 @@ class PhotoGalleryFragment : Fragment() {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $query")
                     photoGalleryViewModel.fetchPhotos(query)
+                    progressBar.visibility = View.VISIBLE
+                    photoRecyclerView.visibility = View.GONE
                     searchView.clearFocus()
                     return true
                 }
@@ -113,6 +121,8 @@ class PhotoGalleryFragment : Fragment() {
         return when (item.itemId) {
             R.id.menu_item_clear -> {
                 photoGalleryViewModel.fetchPhotos(query = "")
+                progressBar.visibility = View.VISIBLE
+                photoRecyclerView.visibility = View.GONE
                 true
             }
             else -> super.onOptionsItemSelected(item)
