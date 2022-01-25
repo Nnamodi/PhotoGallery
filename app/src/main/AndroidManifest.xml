@@ -24,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".webUi.PhotoPageActivity" />
         <receiver android:name=".NotificationReceiver"
             android:permission="com.bignerdranch.android.photogallery.PRIVATE"
             android:exported="false">

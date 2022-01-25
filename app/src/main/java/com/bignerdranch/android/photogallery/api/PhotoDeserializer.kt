@@ -19,7 +19,8 @@ class PhotoDeserializer : JsonDeserializer<PhotoResponse> {
             val album = GalleryItem(
                 gallery["title"].asString,
                 gallery["id"].asString,
-                gallery["url_s"].asString
+                gallery["url_s"].asString,
+                gallery["owner"].asString
             )
             flickrPhotos.add(album)
         }

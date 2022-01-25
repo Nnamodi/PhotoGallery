@@ -1,6 +1,5 @@
 package com.bignerdranch.android.photogallery.ui
 
-import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -24,6 +23,7 @@ import com.bignerdranch.android.photogallery.VisibleFragment
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
 import com.bignerdranch.android.photogallery.model.GalleryItem
+import com.bignerdranch.android.photogallery.webUi.PhotoPageActivity
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "PhotoGalleryFragment"
@@ -179,7 +179,7 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
 
         override fun onClick(view: View) {
-            val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
             startActivity(intent)
         }
     }
