@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.util
 
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
 import androidx.fragment.app.Fragment
+import com.bignerdranch.android.photogallery.util.PollWorker
 
 abstract class VisibleFragment : Fragment() {
     private val onShowNotification = object : BroadcastReceiver() {

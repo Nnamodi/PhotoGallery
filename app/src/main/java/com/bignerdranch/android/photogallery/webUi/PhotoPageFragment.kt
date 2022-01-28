@@ -13,7 +13,7 @@ import android.widget.ProgressBar
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.bignerdranch.android.photogallery.R
-import com.bignerdranch.android.photogallery.VisibleFragment
+import com.bignerdranch.android.photogallery.util.VisibleFragment
 
 private const val ARG_URI = "photo_page_url"
 
@@ -47,7 +47,7 @@ class PhotoPageFragment : VisibleFragment() {
             }
 
             override fun onReceivedTitle(view: WebView?, title: String?) {
-                (activity as AppCompatActivity).supportActionBar?.subtitle = title
+                (activity as? AppCompatActivity)?.supportActionBar?.subtitle = title
             }
         }
         /** Based on a challenge. */

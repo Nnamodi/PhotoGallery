@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.util
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.api.FlickrFetchr
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.model.GalleryItem

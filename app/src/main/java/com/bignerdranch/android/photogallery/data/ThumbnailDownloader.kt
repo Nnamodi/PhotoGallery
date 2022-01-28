@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.bignerdranch.android.photogallery.api.FlickrFetchr
+import java.lang.Exception
 import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "ThumbnailDownloader"
@@ -76,15 +77,19 @@ class ThumbnailDownloader<in T>(
 
     private fun handleRequest(target: T) {
         val url = requestMap[target] ?: return
-        val bitmap = cache.getBitmapFromCache(url) ?: flickrFetchr.fetchPhoto(url) ?: return
-        responseHandler.post(Runnable {
-            if (requestMap[target] != url || hasQuit) {
-                return@Runnable
-            }
-            requestMap.remove(target)
-            onThumbnailDownloaded(target, bitmap)
-            Log.i("Cache", "Image($bitmap) downloaded from $url")
-        })
-        cache.addBitmapToMemoryCache(url, bitmap)
+        try {
+            val bitmap = cache.getBitmapFromCache(url) ?: flickrFetchr.fetchPhoto(url) ?: return
+            responseHandler.post(Runnable {
+                if (requestMap[target] != url || hasQuit) {
+                    return@Runnable
+                }
+                requestMap.remove(target)
+                onThumbnailDownloaded(target, bitmap)
+                Log.i("Cache", "Image($bitmap) downloaded from $url")
+            })
+            cache.addBitmapToMemoryCache(url, bitmap)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error occurred: $e", e)
+        }
     }
 }
