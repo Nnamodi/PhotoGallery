@@ -7,6 +7,7 @@ import androidx.core.content.edit
 private const val PREF_SEARCH_QUERY = "searchQuery"
 private const val PREF_LAST_RESULT_ID = "lastResultId"
 private const val PREF_IS_POLLING = "isPolling"
+private const val BROWSER_SETTING= "browserSetting"
 
 object QueryPreferences {
     fun getStoredQuery(context: Context): String {
@@ -40,6 +41,17 @@ object QueryPreferences {
     fun setPolling(context: Context, isOn: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit {
             putBoolean(PREF_IS_POLLING, isOn)
+        }
+    }
+
+    fun getBrowserChoice(context: Context): String {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(BROWSER_SETTING, "")!!
+    }
+
+    fun setBrowserChoice(context: Context, browser: String) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putString(BROWSER_SETTING, browser)
         }
     }
 }

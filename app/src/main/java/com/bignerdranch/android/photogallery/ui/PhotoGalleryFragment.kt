@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery.ui
 
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -12,14 +13,15 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
-import com.bignerdranch.android.photogallery.PollWorker
+import com.bignerdranch.android.photogallery.util.PollWorker
 import com.bignerdranch.android.photogallery.R
-import com.bignerdranch.android.photogallery.VisibleFragment
+import com.bignerdranch.android.photogallery.util.VisibleFragment
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
 import com.bignerdranch.android.photogallery.model.GalleryItem
@@ -67,14 +69,14 @@ class PhotoGalleryFragment : VisibleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /** Based on challenge. */
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 3).also {
-            it.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (position % 3 == 0)
-                        2 else 1
-                }
-            }
-        }
+        photoRecyclerView.layoutManager = GridLayoutManager(context, 2)//.also {
+//            it.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
+//                override fun getSpanSize(position: Int): Int {
+//                    return if (position % 3 == 0)
+//                        2 else 1
+//                }
+//            }
+//        }
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             { galleryItems ->
@@ -162,6 +164,13 @@ class PhotoGalleryFragment : VisibleFragment() {
                 activity?.invalidateOptionsMenu()
                 true
             }
+            R.id.menu_item_settings -> {
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragmentContainer, PhotoGallerySettings.newInstance())
+                    ?.addToBackStack(null)
+                    ?.commit()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -179,8 +188,23 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
 
         override fun onClick(view: View) {
-            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
-            startActivity(intent)
+            val intent: Intent
+            when (QueryPreferences.getBrowserChoice(requireContext())) {
+                "WebView" -> {
+                    intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
+                    startActivity(intent)
+                }
+                "Custom View" -> {
+                    CustomTabsIntent.Builder()
+                        .setShowTitle(true)
+                        .build()
+                        .launchUrl(requireContext(), galleryItem.photoPageUri)
+                }
+                else -> {
+                    intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+                    startActivity(intent)
+                }
+            }
         }
     }
 
