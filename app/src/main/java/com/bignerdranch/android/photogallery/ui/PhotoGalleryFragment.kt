@@ -19,12 +19,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
-import com.bignerdranch.android.photogallery.util.PollWorker
 import com.bignerdranch.android.photogallery.R
-import com.bignerdranch.android.photogallery.util.VisibleFragment
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
 import com.bignerdranch.android.photogallery.model.GalleryItem
+import com.bignerdranch.android.photogallery.util.PollWorker
+import com.bignerdranch.android.photogallery.util.VisibleFragment
 import com.bignerdranch.android.photogallery.webUi.PhotoPageActivity
 import java.util.concurrent.TimeUnit
 
@@ -166,6 +166,7 @@ class PhotoGalleryFragment : VisibleFragment() {
             }
             R.id.menu_item_settings -> {
                 activity?.supportFragmentManager?.beginTransaction()
+                    ?.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     ?.replace(R.id.fragmentContainer, PhotoGallerySettings.newInstance())
                     ?.addToBackStack(null)
                     ?.commit()
@@ -188,20 +189,21 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
 
         override fun onClick(view: View) {
-            val intent: Intent
             when (QueryPreferences.getBrowserChoice(requireContext())) {
                 "WebView" -> {
-                    intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
+                    val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
                     startActivity(intent)
                 }
                 "Custom View" -> {
                     CustomTabsIntent.Builder()
                         .setShowTitle(true)
+                        .setStartAnimations(requireContext(), R.anim.slide_in_left, R.anim.slide_out_right)
+                        .setExitAnimations(requireContext(), R.anim.slide_in_right, R.anim.slide_out_left)
                         .build()
                         .launchUrl(requireContext(), galleryItem.photoPageUri)
                 }
-                else -> {
-                    intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
+                else -> { // Browser app
+                    val intent = Intent(Intent.ACTION_VIEW, galleryItem.photoPageUri)
                     startActivity(intent)
                 }
             }

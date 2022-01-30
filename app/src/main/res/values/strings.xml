@@ -13,4 +13,6 @@
     <string name="web_view">WebView</string>
     <string name="browser_app">Browser app</string>
     <string name="browser_type">Browser Type</string>
+    <string name="roland">Roland</string>
+    <string name="dark_mode">Dark Mode</string>
 </resources>
