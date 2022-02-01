@@ -1,6 +1,7 @@
 package com.bignerdranch.android.photogallery.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -12,7 +13,9 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +43,12 @@ class PhotoGalleryFragment : VisibleFragment() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val switchState = QueryPreferences.getSwitchState(requireContext())
+        if (switchState) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
         StrictMode.enableDefaults()
         TrafficStats.setThreadStatsTag(1)
         retainInstance = true
@@ -69,6 +78,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /** Based on challenge. */
+        // TODO
         photoRecyclerView.layoutManager = GridLayoutManager(context, 2)//.also {
 //            it.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
 //                override fun getSpanSize(position: Int): Int {
@@ -189,6 +199,14 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
 
         override fun onClick(view: View) {
+            val color = if (QueryPreferences.getSwitchState(requireContext())) {
+                Color.rgb(0, 0, 0) // Black
+            } else {
+                Color.rgb(44, 0, 145) // Blue
+            }
+            val defaultColors = CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(color)
+                .build()
             when (QueryPreferences.getBrowserChoice(requireContext())) {
                 "WebView" -> {
                     val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri)
@@ -197,6 +215,7 @@ class PhotoGalleryFragment : VisibleFragment() {
                 "Custom View" -> {
                     CustomTabsIntent.Builder()
                         .setShowTitle(true)
+                        .setDefaultColorSchemeParams(defaultColors)
                         .setStartAnimations(requireContext(), R.anim.slide_in_left, R.anim.slide_out_right)
                         .setExitAnimations(requireContext(), R.anim.slide_in_right, R.anim.slide_out_left)
                         .build()
@@ -220,7 +239,7 @@ class PhotoGalleryFragment : VisibleFragment() {
             val galleryItem = galleryItems[position]
             holder.bindGalleryItem(galleryItem)
             val placeHolder: Drawable = ContextCompat.getDrawable(
-                requireContext(), R.drawable.bill_up_close
+                requireContext(), R.drawable.photo
             ) ?: ColorDrawable()
             holder.bindDrawable(placeHolder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)

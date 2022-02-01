@@ -6,4 +6,4 @@
     android:layout_gravity="center"
     android:scaleType="centerCrop"
     android:contentDescription="@string/gallery_photo"
-    tools:srcCompat="@drawable/bill_up_close"/>
+    tools:srcCompat="@drawable/photo"/>

@@ -15,6 +15,7 @@ class PhotoPageActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = getString(R.string.photo_page)
         val fm = supportFragmentManager
         val currentFragment = fm.findFragmentById(R.id.fragment_container)
         if (currentFragment == null) {

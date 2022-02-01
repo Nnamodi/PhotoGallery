@@ -1,11 +1,10 @@
 package com.bignerdranch.android.photogallery.webUi
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -25,6 +24,7 @@ class PhotoPageFragment : VisibleFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         uri = arguments?.getParcelable(ARG_URI) ?: Uri.EMPTY
+        setHasOptionsMenu(true)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -59,6 +59,27 @@ class PhotoPageFragment : VisibleFragment() {
             }
         }
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_photo_page, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.share_link) {
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.link, uri))
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_link_subject))
+            }.also { intent ->
+                val chooserIntent = Intent.createChooser(intent, null)
+                startActivity(chooserIntent)
+            }
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     companion object {

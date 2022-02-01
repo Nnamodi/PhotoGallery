@@ -9,6 +9,7 @@ private const val PREF_LAST_RESULT_ID = "lastResultId"
 private const val PREF_IS_POLLING = "isPolling"
 private const val BROWSER_SETTING= "browserSetting"
 private const val RADIO_BUTTON_ID = "radioButtonId"
+private const val SWITCHED = "switchedOn"
 
 object QueryPreferences {
     fun getStoredQuery(context: Context): String {
@@ -64,6 +65,17 @@ object QueryPreferences {
     fun setRadioButtonId(context: Context, id: Int) {
         PreferenceManager.getDefaultSharedPreferences(context).edit {
             putInt(RADIO_BUTTON_ID, id)
+        }
+    }
+
+    fun getSwitchState(context: Context): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(SWITCHED, false)
+    }
+
+    fun setSwitchedState(context: Context, switchedOn: Boolean) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putBoolean(SWITCHED, switchedOn)
         }
     }
 }

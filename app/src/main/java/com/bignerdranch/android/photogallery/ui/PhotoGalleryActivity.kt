@@ -24,7 +24,9 @@ class PhotoGalleryActivity : AppCompatActivity() {
 
     companion object {
         fun newIntent(context: Context): Intent {
-            return Intent(context, PhotoGalleryActivity::class.java)
+            return Intent(context, PhotoGalleryActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
         }
     }
 }
