@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.bignerdranch.android.photogallery.R
@@ -44,10 +45,13 @@ class PollWorker(private val context: Context, workerParams: WorkerParameters): 
             val notification = NotificationCompat
                 .Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setTicker(resources.getText(R.string.new_pictures_title))
-                .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setColor(ContextCompat.getColor(context, R.color.purple_900))
                 .setContentTitle(resources.getText(R.string.new_pictures_title))
                 .setContentText(resources.getText(R.string.new_pictures_text))
                 .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
                 .setAutoCancel(true)
                 .build()
             showBackgroundNotification(0, notification)
