@@ -7,21 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
 import android.widget.Switch
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.core.content.ContextCompat
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.util.VisibleFragment
 
-class PhotoGallerySettings : VisibleFragment() {
+class PhotoSettingsFragment : VisibleFragment() {
     private lateinit var radioGroup: RadioGroup
     private lateinit var darkModeSwitch: Switch
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity?.actionBar?.title = "Settings"
-    }
+    private lateinit var roland: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_gallery_settings, container, false)
@@ -56,10 +54,15 @@ class PhotoGallerySettings : VisibleFragment() {
             }
             QueryPreferences.setRadioButtonId(requireContext(), checkedButtonId)
         }
+        roland = view.findViewById(R.id.roland)
+        val switchState = QueryPreferences.getSwitchState(requireContext())
+        if (switchState) {
+            roland.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
+        }
         return view
     }
 
     companion object {
-        fun newInstance() = PhotoGallerySettings()
+        fun newInstance() = PhotoSettingsFragment()
     }
 }

@@ -101,6 +101,7 @@
         app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
     <View
+        android:id="@+id/divider3"
         android:layout_width="0dp"
         android:layout_height="5dp"
         android:layout_marginTop="8dp"
@@ -110,14 +111,18 @@
         app:layout_constraintTop_toBottomOf="@id/dark_mode_switch" />
 
     <TextView
+        android:id="@+id/roland"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="76dp"
         android:fontFamily="cursive"
         android:gravity="center"
         android:text="@string/roland"
+        android:textColor="@color/purple_900"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
