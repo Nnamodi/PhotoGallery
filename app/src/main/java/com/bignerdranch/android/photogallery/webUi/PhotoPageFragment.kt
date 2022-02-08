@@ -67,6 +67,9 @@ class PhotoPageFragment : VisibleFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            activity?.onBackPressed()
+        }
         if (item.itemId == R.id.share_link) {
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"

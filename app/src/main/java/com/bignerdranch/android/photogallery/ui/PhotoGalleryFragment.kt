@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -21,8 +23,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
 import com.bignerdranch.android.photogallery.R
+import com.bignerdranch.android.photogallery.api.FlickrFetchr
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
 import com.bignerdranch.android.photogallery.model.GalleryItem
@@ -39,6 +43,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
     private lateinit var progressBar: ProgressBar
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +75,12 @@ class PhotoGalleryFragment : VisibleFragment() {
         )
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
-        progressBar = view.findViewById(R.id.progress_bar) as ProgressBar
+        progressBar = view.findViewById(R.id.progress_bar)
         progressBar.visibility = View.VISIBLE
+        swipeRefresh = view.findViewById(R.id.swipe_refresh)
+        swipeRefresh.setOnRefreshListener {
+            poll(requireContext())
+        }
         return view
     }
 
@@ -175,11 +184,14 @@ class PhotoGalleryFragment : VisibleFragment() {
                 true
             }
             R.id.menu_item_settings -> {
-                activity?.supportFragmentManager?.beginTransaction()
-                    ?.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    ?.replace(R.id.fragmentContainer, PhotoGallerySettings.newInstance())
-                    ?.addToBackStack(null)
-                    ?.commit()
+                val intent = PhotoSettingsActivity.newIntent(requireContext())
+                startActivity(intent)
+                true
+            }
+            R.id.menu_item_history -> {
+                HistoryDialog.newInstance().apply {
+                    show(this@PhotoGalleryFragment.childFragmentManager, "history")
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -246,6 +258,32 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
 
         override fun getItemCount(): Int = galleryItems.size
+    }
+
+    private fun poll(context: Context) {
+        val query = QueryPreferences.getStoredQuery(context)
+        val lastResultId = QueryPreferences.getLastResultId(context)
+        val items: List<GalleryItem> = if (query.isEmpty()) {
+            FlickrFetchr().fetchPhotosRequest()
+                .execute()
+                .body()
+                ?.photos
+                ?.galleryItems
+        } else {
+            FlickrFetchr().searchPhotosRequest(query)
+                .execute()
+                .body()
+                ?.photos
+                ?.galleryItems
+        } ?: emptyList()
+        val result = items.first().id
+        if (result != lastResultId) {
+            QueryPreferences.setLastResultId(context, result)
+            startActivity(PhotoGalleryActivity.newIntent(context))
+        } else {
+            Toast.makeText(context, R.string.no_new_pic, Toast.LENGTH_SHORT).show()
+        }
+        swipeRefresh.isRefreshing = false
     }
 
     companion object {
