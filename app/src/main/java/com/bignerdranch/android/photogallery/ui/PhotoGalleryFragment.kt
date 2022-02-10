@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.net.TrafficStats
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.StrictMode
 import android.util.Log
 import android.view.*
@@ -22,6 +23,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
@@ -188,6 +190,15 @@ class PhotoGalleryFragment : VisibleFragment() {
                 startActivity(intent)
                 true
             }
+            R.id.layout_switch -> {
+                item.isChecked = !item.isChecked
+                if (item.isChecked) {
+                    photoRecyclerView.layoutManager = LinearLayoutManager(context)
+                } else {
+                    photoRecyclerView.layoutManager = GridLayoutManager(context, 2)
+                }
+                true
+            }
             R.id.menu_item_history -> {
                 HistoryDialog.newInstance().apply {
                     show(this@PhotoGalleryFragment.childFragmentManager, "history")
@@ -261,29 +272,35 @@ class PhotoGalleryFragment : VisibleFragment() {
     }
 
     private fun poll(context: Context) {
-        val query = QueryPreferences.getStoredQuery(context)
-        val lastResultId = QueryPreferences.getLastResultId(context)
-        val items: List<GalleryItem> = if (query.isEmpty()) {
-            FlickrFetchr().fetchPhotosRequest()
-                .execute()
-                .body()
-                ?.photos
-                ?.galleryItems
-        } else {
-            FlickrFetchr().searchPhotosRequest(query)
-                .execute()
-                .body()
-                ?.photos
-                ?.galleryItems
-        } ?: emptyList()
-        val result = items.first().id
-        if (result != lastResultId) {
-            QueryPreferences.setLastResultId(context, result)
-            startActivity(PhotoGalleryActivity.newIntent(context))
-        } else {
-            Toast.makeText(context, R.string.no_new_pic, Toast.LENGTH_SHORT).show()
-        }
-        swipeRefresh.isRefreshing = false
+        Handler(Looper.getMainLooper()).postDelayed({
+            try {
+                val query = QueryPreferences.getStoredQuery(context)
+                val lastResultId = QueryPreferences.getLastResultId(context)
+                val items: List<GalleryItem> = if (query.isEmpty()) {
+                    FlickrFetchr().fetchPhotosRequest()
+                        .execute()
+                        .body()
+                        ?.photos
+                        ?.galleryItems
+                } else {
+                    FlickrFetchr().searchPhotosRequest(query)
+                        .execute()
+                        .body()
+                        ?.photos
+                        ?.galleryItems
+                } ?: emptyList()
+                val result = items.first().id
+                if (result != lastResultId) {
+                    QueryPreferences.setLastResultId(context, result)
+                    photoGalleryViewModel.fetchPhotos(query)
+                } else {
+                    Toast.makeText(context, R.string.no_new_pic, Toast.LENGTH_SHORT).show()
+                }
+            } catch(e: Exception) {
+                swipeRefresh.isRefreshing = false
+            }
+            swipeRefresh.isRefreshing = false
+        }, 3000)
     }
 
     companion object {

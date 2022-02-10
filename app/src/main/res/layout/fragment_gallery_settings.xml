@@ -38,7 +38,7 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/browser_view_text">
+        app:layout_constraintTop_toBottomOf="@id/browser_view_text">
 
         <RadioButton
             android:id="@+id/browser_app_button"
@@ -83,7 +83,7 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radio_group" />
+        app:layout_constraintTop_toBottomOf="@id/radio_group" />
 
     <Switch
         android:id="@+id/dark_mode_switch"
@@ -98,7 +98,7 @@
         android:track="@drawable/switch_track"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toBottomOf="@id/divider2" />
 
     <View
         android:id="@+id/divider3"

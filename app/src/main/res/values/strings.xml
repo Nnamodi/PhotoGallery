@@ -6,7 +6,7 @@
     <string name="clear_search">Clear Search</string>
     <string name="notification_channel_name">FlickrFetchr</string>
     <string name="new_pictures_title">New Pictures</string>
-    <string name="new_pictures_text">Check out these newly fetched picture.</string>
+    <string name="new_pictures_text">Check out these newly fetched pictures.</string>
     <string name="start_polling">Start polling</string>
     <string name="stop_polling">Stop polling</string>
     <string name="settings">Settings</string>
@@ -19,4 +19,11 @@
     <string name="share_link">Share link…</string>
     <string name="share_link_subject">Photo link</string>
     <string name="link">%1s</string>
+    <string name="history">History</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear_history">Clear</string>
+    <string name="string_history">Rising sun shine</string>
+    <string name="remove_history">Remove history</string>
+    <string name="no_new_pic">No new pictures yet!</string>
+    <string name="linear_layout">LinearLayout</string>
 </resources>
