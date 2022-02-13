@@ -203,6 +203,12 @@ class PhotoGalleryFragment : VisibleFragment() {
                 HistoryDialog.newInstance().apply {
                     show(this@PhotoGalleryFragment.childFragmentManager, "history")
                 }
+                childFragmentManager.setFragmentResultListener("query", this) { _, bundle ->
+                    val string = bundle.getSerializable("string") as String
+                    photoGalleryViewModel.fetchPhotos(string)
+                    photoRecyclerView.visibility = View.GONE
+                    progressBar.visibility = View.VISIBLE
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bignerdranch.android.photogallery">
 
-    <permission android:name="com.bignerdranch.android.photogallery.PRIVATE"
+    <permission
+        android:name="com.bignerdranch.android.photogallery.PRIVATE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,17 +25,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".webUi.PhotoPageActivity"
+        <activity
+            android:name=".webUi.PhotoPageActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:parentActivityName=".ui.PhotoGalleryActivity"/>
-        <activity android:name=".ui.PhotoSettingsActivity"
+            android:parentActivityName=".ui.PhotoGalleryActivity" />
+        <activity
+            android:name=".ui.PhotoSettingsActivity"
             android:label="@string/settings"
-            android:parentActivityName=".ui.PhotoGalleryActivity"/>
-        <receiver android:name=".util.NotificationReceiver"
-            android:permission="com.bignerdranch.android.photogallery.PRIVATE"
-            android:exported="false">
-            <intent-filter
-                android:priority="-999">
+            android:parentActivityName=".ui.PhotoGalleryActivity" />
+
+        <receiver
+            android:name=".util.NotificationReceiver"
+            android:exported="false"
+            android:permission="com.bignerdranch.android.photogallery.PRIVATE">
+            <intent-filter android:priority="-999">
                 <action android:name="com.bignerdranch.android.photogallery.SHOW_NOTIFICATION" />
             </intent-filter>
         </receiver>
