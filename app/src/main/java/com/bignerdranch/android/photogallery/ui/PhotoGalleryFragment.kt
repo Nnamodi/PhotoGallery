@@ -50,6 +50,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        QueryPreferences.setSplashedPaused(requireContext(), false)
         val switchState = QueryPreferences.getSwitchState(requireContext())
         if (switchState) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -88,16 +89,7 @@ class PhotoGalleryFragment : VisibleFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        /** Based on challenge. */
-        // TODO
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 2)//.also {
-//            it.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
-//                override fun getSpanSize(position: Int): Int {
-//                    return if (position % 3 == 0)
-//                        2 else 1
-//                }
-//            }
-//        }
+        photoRecyclerView.layoutManager = GridLayoutManager(context, 2)
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             { galleryItems ->
