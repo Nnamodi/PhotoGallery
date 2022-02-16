@@ -6,23 +6,20 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 
 class Splash : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val isPaused = QueryPreferences.getSplashPaused(this)
-        Log.i("Splashed", "Created, $isPaused")
-        if (!isPaused) {
-            splash()
+        val switchState = QueryPreferences.getSwitchState(this)
+        if (switchState) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        val isPaused = QueryPreferences.getSplashPaused(this)
-        QueryPreferences.setSplashedPaused(this, true)
-        Log.i("Splashed", "Paused, $isPaused")
+        super.onCreate(savedInstanceState)
+        splash()
+        Log.i("Splashed", "Created")
     }
 
     private fun splash() {

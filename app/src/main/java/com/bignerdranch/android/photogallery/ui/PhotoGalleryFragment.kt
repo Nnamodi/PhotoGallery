@@ -50,7 +50,6 @@ class PhotoGalleryFragment : VisibleFragment() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        QueryPreferences.setSplashedPaused(requireContext(), false)
         val switchState = QueryPreferences.getSwitchState(requireContext())
         if (switchState) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

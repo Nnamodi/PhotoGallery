@@ -17,7 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoGallery">
-        <activity android:name=".ui.Splash"
+        <activity
+            android:name=".ui.Splash"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:theme="@style/Splash">
             <intent-filter>
