@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Gallery(
-    @PrimaryKey
-    val id: Int,
-    val search: String
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    var search: String = ""
 )

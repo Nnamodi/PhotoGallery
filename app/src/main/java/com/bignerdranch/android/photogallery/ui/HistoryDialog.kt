@@ -7,67 +7,55 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bignerdranch.android.photogallery.R
-import com.bignerdranch.android.photogallery.data.QueryPreferences
+import com.bignerdranch.android.photogallery.model.Gallery
 
 class HistoryDialog : DialogFragment() {
+    private lateinit var historyViewModel: PhotoGalleryViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var clearHistory: TextView
     private lateinit var cancel: TextView
-    private lateinit var history: ArrayList<String>
-    private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        photoGalleryViewModel = ViewModelProvider(this)
-            .get(PhotoGalleryViewModel::class.java)
+        historyViewModel = ViewModelProvider(this) [PhotoGalleryViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.history_dialog, container, false)
         recyclerView = view.findViewById(R.id.history_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val historyList = QueryPreferences.getStoredQuery(requireContext())
-        val histories = arrayListOf( // A temporal dummy data
-            historyList,
-            "dog",
-            "corn",
-            "fish",
-            "cream",
-            "fire on the house",
-            "cattle",
-            "ocean",
-            "hilltop",
-            "snow",
-            "cup of tea",
-            "bedtimes",
-            "night light",
-            "lions",
-            "singing birds",
-            "landscape",
-            "seascape"
-        )
-        history = ArrayList()
-        history = histories
         clearHistory = view.findViewById(R.id.clear_history)
         clearHistory.setOnClickListener {
-            history.removeAll(ArrayList())
+            historyViewModel.clearAll()
+            Toast.makeText(context, getString(R.string.history_cleared), Toast.LENGTH_SHORT).show()
             dismiss()
         }
         cancel = view.findViewById(R.id.cancel)
         cancel.setOnClickListener {
             dismiss()
         }
-        recyclerView.adapter = HistoryAdapter(history)
-        Log.i("HistoryDialog", "$history from $historyList")
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        this.historyViewModel.getSearches.observe(
+            viewLifecycleOwner,
+            { gallery ->
+                Log.i("HistoryDialog", "SearchHistory received from ViewModel: $gallery")
+                recyclerView.adapter = HistoryAdapter(gallery)
+            }
+        )
+    }
+
     private inner class HistoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        private lateinit var gallery: Gallery
         private var text: TextView = itemView.findViewById(R.id.string)
         private var removeHistory: ImageView = itemView.findViewById(R.id.remove_history)
 
@@ -75,24 +63,28 @@ class HistoryDialog : DialogFragment() {
             itemView.setOnClickListener(this)
         }
 
-        fun bind(historyString: String) {
-            text.text = historyString
+        fun bind(gallery: Gallery) {
+            this.gallery = gallery
+            text.text = gallery.search
             removeHistory.setOnClickListener {
-                history.remove(text.text.toString())
+                historyViewModel.removeSearch(gallery)
             }
         }
 
         override fun onClick(view: View) {
+            gallery = Gallery()
             val query = text.text.toString()
+            gallery.search = query
             val string = Bundle().apply {
                 putSerializable("string", query)
             }
             parentFragmentManager.setFragmentResult("query", string)
+            historyViewModel.addSearch(gallery)
             dismiss()
         }
     }
 
-    private inner class HistoryAdapter(private val string: ArrayList<String>) : RecyclerView.Adapter<HistoryHolder>() {
+    private inner class HistoryAdapter(private val string: List<Gallery>) : RecyclerView.Adapter<HistoryHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryHolder {
             val view = layoutInflater.inflate(R.layout.history_list, parent, false)
             return HistoryHolder(view)

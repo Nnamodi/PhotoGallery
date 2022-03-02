@@ -10,7 +10,6 @@ private const val PREF_IS_POLLING = "isPolling"
 private const val BROWSER_SETTING= "browserSetting"
 private const val RADIO_BUTTON_ID = "radioButtonId"
 private const val SWITCHED = "switchedOn"
-private const val SPLASH = "paused"
 
 object QueryPreferences {
     fun getStoredQuery(context: Context): String {
@@ -77,17 +76,6 @@ object QueryPreferences {
     fun setSwitchedState(context: Context, switchedOn: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit {
             putBoolean(SWITCHED, switchedOn)
-        }
-    }
-
-    fun getSplashPaused(context: Context): Boolean {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean(SPLASH, false)
-    }
-
-    fun setSplashedPaused(context: Context, isPaused: Boolean) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit {
-            putBoolean(SPLASH, isPaused)
         }
     }
 }

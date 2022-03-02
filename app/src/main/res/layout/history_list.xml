@@ -8,7 +8,7 @@
     <View
         android:id="@+id/history_divider"
         android:layout_width="0dp"
-        android:layout_height=".5dp"
+        android:layout_height=".05dp"
         android:background="@color/grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
     <View
         android:id="@+id/history_divider2"
         android:layout_width="0dp"
-        android:layout_height=".5dp"
+        android:layout_height=".05dp"
         android:background="@color/grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

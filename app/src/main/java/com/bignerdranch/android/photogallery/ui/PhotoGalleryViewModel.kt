@@ -18,8 +18,9 @@ class PhotoGalleryViewModel(private val app: Application) : AndroidViewModel(app
     val searchTerm: String
         get() = mutableSearchTerm.value ?: ""
     // Database
-    private val getSearches: LiveData<List<Gallery>>
+    val getSearches: LiveData<List<Gallery>>
     private val repository: GalleryRepository
+    private val galleryDao = GalleryDatabase.getDatabase(app).galleryDao()
 
     init {
         mutableSearchTerm.value = QueryPreferences.getStoredQuery(app)
@@ -31,7 +32,6 @@ class PhotoGalleryViewModel(private val app: Application) : AndroidViewModel(app
             }
         }
         // Database
-        val galleryDao = GalleryDatabase.getDatabase(app).galleryDao()
         repository = GalleryRepository(galleryDao)
         getSearches = repository.getSearches
     }

@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:minHeight="1000dp">
 
     <TextView
         android:id="@+id/history"
@@ -21,7 +22,7 @@
     <View
         android:id="@+id/history_divider"
         android:layout_width="0dp"
-        android:layout_height="1.5dp"
+        android:layout_height="1dp"
         android:background="@color/grey"
         app:layout_constraintEnd_toEndOf="@id/history_recycler_view"
         app:layout_constraintStart_toStartOf="@id/history_recycler_view"
@@ -29,8 +30,13 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_recycler_view"
-        android:layout_width="350dp"
-        android:layout_height="500dp"
+        android:layout_width="335dp"
+        android:layout_height="590dp"
+        app:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="?android:attr/fastScrollThumbDrawable"
+        app:fastScrollHorizontalTrackDrawable="?android:attr/fastScrollTrackDrawable"
+        app:fastScrollVerticalThumbDrawable="?android:attr/fastScrollThumbDrawable"
+        app:fastScrollVerticalTrackDrawable="?android:attr/fastScrollTrackDrawable"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/history_divider"
@@ -39,7 +45,7 @@
     <View
         android:id="@+id/history_divider2"
         android:layout_width="0dp"
-        android:layout_height="1.5dp"
+        android:layout_height="1dp"
         android:background="@color/grey"
         app:layout_constraintEnd_toEndOf="@id/history_recycler_view"
         app:layout_constraintStart_toStartOf="@id/history_recycler_view"

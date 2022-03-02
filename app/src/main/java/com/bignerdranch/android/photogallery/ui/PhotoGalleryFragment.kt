@@ -31,6 +31,7 @@ import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.api.FlickrFetchr
 import com.bignerdranch.android.photogallery.data.QueryPreferences
 import com.bignerdranch.android.photogallery.data.ThumbnailDownloader
+import com.bignerdranch.android.photogallery.model.Gallery
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.util.PollWorker
 import com.bignerdranch.android.photogallery.util.VisibleFragment
@@ -41,21 +42,24 @@ private const val TAG = "PhotoGalleryFragment"
 private const val POLL_WORK = "POLL_WORK"
 
 class PhotoGalleryFragment : VisibleFragment() {
+    private lateinit var gallery: Gallery
     private lateinit var photoRecyclerView: RecyclerView
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
     private lateinit var progressBar: ProgressBar
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private var linear = false
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val switchState = QueryPreferences.getSwitchState(requireContext())
         if (switchState) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+        super.onCreate(savedInstanceState)
+        gallery = Gallery()
         StrictMode.enableDefaults()
         TrafficStats.setThreadStatsTag(1)
         retainInstance = true
@@ -119,7 +123,9 @@ class PhotoGalleryFragment : VisibleFragment() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $query")
+                    gallery.search = query
                     photoGalleryViewModel.fetchPhotos(query)
+                    photoGalleryViewModel.addSearch(gallery)
                     progressBar.visibility = View.VISIBLE
                     photoRecyclerView.visibility = View.GONE
                     searchView.clearFocus()
@@ -185,8 +191,10 @@ class PhotoGalleryFragment : VisibleFragment() {
                 item.isChecked = !item.isChecked
                 if (item.isChecked) {
                     photoRecyclerView.layoutManager = LinearLayoutManager(context)
+                    linear = true
                 } else {
                     photoRecyclerView.layoutManager = GridLayoutManager(context, 2)
+                    linear = false
                 }
                 true
             }
@@ -252,6 +260,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     private inner class PhotoAdapter(private val galleryItems: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
             val view = layoutInflater.inflate(R.layout.list_item_gallery, parent, false) as ImageView
+            Log.i("PhotoHolders.com", "CreateViewHolder, $linear")
             return PhotoHolder(view)
         }
 
@@ -263,6 +272,8 @@ class PhotoGalleryFragment : VisibleFragment() {
             ) ?: ColorDrawable()
             holder.bindDrawable(placeHolder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
+            if (linear) { holder.itemView.layoutParams.height = 600 } else { holder.itemView.layoutParams.height = 400 }
+            Log.i("PhotoHolders.com", "BindViewHolder = ${holder.itemView.layoutParams.height}, linear $linear")
         }
 
         override fun getItemCount(): Int = galleryItems.size
