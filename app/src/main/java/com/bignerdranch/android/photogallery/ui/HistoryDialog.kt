@@ -10,7 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.model.Gallery
@@ -20,6 +22,7 @@ class HistoryDialog : DialogFragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var clearHistory: TextView
     private lateinit var cancel: TextView
+    private var adapter: HistoryAdapter? = HistoryAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +33,7 @@ class HistoryDialog : DialogFragment() {
         val view = inflater.inflate(R.layout.history_dialog, container, false)
         recyclerView = view.findViewById(R.id.history_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
         clearHistory = view.findViewById(R.id.clear_history)
         clearHistory.setOnClickListener {
             historyViewModel.clearAll()
@@ -47,9 +51,9 @@ class HistoryDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         this.historyViewModel.getSearches.observe(
             viewLifecycleOwner,
-            { gallery ->
-                Log.i("HistoryDialog", "SearchHistory received from ViewModel: $gallery")
-                recyclerView.adapter = HistoryAdapter(gallery)
+            { history ->
+                Log.i("HistoryDialog", "SearchHistory received from ViewModel: $history")
+                (recyclerView.adapter as HistoryAdapter).submitList(history)
             }
         )
     }
@@ -84,18 +88,25 @@ class HistoryDialog : DialogFragment() {
         }
     }
 
-    private inner class HistoryAdapter(private val string: List<Gallery>) : RecyclerView.Adapter<HistoryHolder>() {
+    private inner class HistoryAdapter : ListAdapter<Gallery, HistoryHolder>(DiffCallBack()) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryHolder {
             val view = layoutInflater.inflate(R.layout.history_list, parent, false)
             return HistoryHolder(view)
         }
 
         override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
-            val string = string[position]
-            holder.bind(string)
+            holder.bind(getItem(position))
+        }
+    }
+
+    class DiffCallBack : DiffUtil.ItemCallback<Gallery>() {
+        override fun areItemsTheSame(oldItem: Gallery, newItem: Gallery): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun getItemCount(): Int = string.size
+        override fun areContentsTheSame(oldItem: Gallery, newItem: Gallery): Boolean {
+            return oldItem == newItem
+        }
     }
 
     companion object {

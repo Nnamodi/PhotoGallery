@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
@@ -48,6 +49,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
     private lateinit var progressBar: ProgressBar
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var noPhotosText: TextView
     private var linear = false
 
     @Suppress("DEPRECATION")
@@ -83,6 +85,7 @@ class PhotoGalleryFragment : VisibleFragment() {
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
         progressBar = view.findViewById(R.id.progress_bar)
         progressBar.visibility = View.VISIBLE
+        noPhotosText = view.findViewById(R.id.no_photos)
         swipeRefresh = view.findViewById(R.id.swipe_refresh)
         swipeRefresh.setOnRefreshListener {
             poll(requireContext())
@@ -100,6 +103,11 @@ class PhotoGalleryFragment : VisibleFragment() {
                 photoRecyclerView.adapter = PhotoAdapter(galleryItems)
                 progressBar.visibility = View.GONE
                 photoRecyclerView.visibility = View.VISIBLE
+                // If search returns no photos...
+                if (galleryItems.isEmpty()) {
+                    photoRecyclerView.visibility = View.GONE
+                    noPhotosText.visibility = View.VISIBLE
+                }
             }
         )
     }
@@ -128,6 +136,7 @@ class PhotoGalleryFragment : VisibleFragment() {
                     photoGalleryViewModel.addSearch(gallery)
                     progressBar.visibility = View.VISIBLE
                     photoRecyclerView.visibility = View.GONE
+                    noPhotosText.visibility = View.GONE
                     searchView.clearFocus()
                     return true
                 }
@@ -158,6 +167,7 @@ class PhotoGalleryFragment : VisibleFragment() {
                 photoGalleryViewModel.fetchPhotos(query = "")
                 progressBar.visibility = View.VISIBLE
                 photoRecyclerView.visibility = View.GONE
+                noPhotosText.visibility = View.GONE
                 true
             }
             R.id.menu_item_toggle_polling -> {
@@ -207,6 +217,7 @@ class PhotoGalleryFragment : VisibleFragment() {
                     photoGalleryViewModel.fetchPhotos(string)
                     photoRecyclerView.visibility = View.GONE
                     progressBar.visibility = View.VISIBLE
+                    noPhotosText.visibility = View.GONE
                 }
                 true
             }

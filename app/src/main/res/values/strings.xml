@@ -27,4 +27,5 @@
     <string name="no_new_pic">No new pictures yet!</string>
     <string name="linear_layout">LinearLayout</string>
     <string name="history_cleared">History cleared</string>
+    <string name="no_photos_found">Oops… No photos found!</string>
 </resources>
